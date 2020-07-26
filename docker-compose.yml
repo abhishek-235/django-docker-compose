@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  djangoapp:
+    build: .
+    volumes:
+      - ./core:/src
+      - ./core/static:/src/static  # <-- bind the static volume
+      - ./core/media:/src/media  # <-- bind the media volume
+  nginx:
+    image: nginx:1.13
+    ports:
+      - 80:80
+    expose:
+      - '80'
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - ./core/static:/src/static  # <-- bind the static volume
+      - ./core/media:/src/media  # <-- bind the media volume
+    depends_on:  # <-- wait for djangoapp to be "ready" before starting this service
+      - djangoapp
+    links:
+      - djangoapp
+volumes:
+  myFirstProject:
+  static:
+  media:
